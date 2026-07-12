@@ -1,0 +1,2 @@
+source D:/01_Projects/TXU01/build/bootloader/gdbinit/symbols
+source D:/01_Projects/TXU01/build/bootloader/gdbinit/connect

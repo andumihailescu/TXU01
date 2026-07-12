@@ -1,0 +1,10 @@
+{
+    "idf.currentSetup": "C:\\esp\\v6.0.2\\esp-idf",
+    "idf.flashType": "JTAG",
+    "idf.customOpenOCDPath": "C:\\Espressif\\tools\\openocd-esp32\\v0.12.0-esp32-20260424\\openocd-esp32\\bin\\openocd.exe",
+    "idf.openOcdConfigs": [
+        "interface/esp_usb_bridge.cfg",
+        "target/esp32s3.cfg"
+    ],
+    "idf.openOcdDebugLevel": 3
+}
