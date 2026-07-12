@@ -19,15 +19,14 @@ namespace remote_protocol
      * Byte 1      : 'C'
      * Byte 2      : protocol version
      * Byte 3      : message type
-     * Byte 4      : destination
-     * Byte 5      : flags
-     * Byte 6..7   : sequence number, little-endian
-     * Byte 8..9   : message ID, little-endian
-     * Byte 10     : payload length
-     * Byte 11..N  : payload
+     * Byte 4      : flags
+     * Byte 5..6   : sequence number, little-endian
+     * Byte 7..8   : message ID, little-endian
+     * Byte 9      : payload length
+     * Byte 10..N  : payload
      * Ultimii 2   : CRC16-CCITT, little-endian
      */
-    constexpr std::size_t HEADER_SIZE = 11;
+    constexpr std::size_t HEADER_SIZE = 10;
     constexpr std::size_t CRC_SIZE = 2;
     constexpr std::size_t MIN_PACKET_SIZE =
         HEADER_SIZE + CRC_SIZE;
@@ -43,18 +42,6 @@ namespace remote_protocol
         Heartbeat = 5
     };
 
-    /**
-     * Valorile sunt ID-uri logice.
-     * Se pot adauga ulterior alte ECU-uri fara modificarea wire format-ului.
-     */
-    enum class Destination : uint8_t
-    {
-        Rxu01 = 0x01,
-        Lmcu100 = 0x10,
-        Scm110 = 0x11,
-        Broadcast = 0xFF
-    };
-
     enum MessageFlags : uint8_t
     {
         FlagNone = 0,
@@ -62,11 +49,12 @@ namespace remote_protocol
         FlagIsResponse = 1U << 1
     };
 
+    constexpr uint8_t VALID_FLAGS_MASK =
+        FlagAckRequested | FlagIsResponse;
+
     struct Message
     {
         MessageType type = MessageType::Command;
-        Destination destination = Destination::Rxu01;
-
         uint8_t flags = FlagNone;
 
         uint16_t sequence_number = 0;
@@ -81,7 +69,7 @@ namespace remote_protocol
         Ok,
         NullPointer,
         InvalidMessageType,
-        InvalidDestination,
+        InvalidFlags,
         PayloadTooLarge,
         OutputTooSmall
     };
@@ -94,7 +82,7 @@ namespace remote_protocol
         InvalidMagic,
         UnsupportedVersion,
         InvalidMessageType,
-        InvalidDestination,
+        InvalidFlags,
         PayloadTooLarge,
         InvalidPacketLength,
         CrcMismatch
@@ -102,7 +90,7 @@ namespace remote_protocol
 
     bool is_valid_message_type(MessageType type);
 
-    bool is_valid_destination(Destination destination);
+    bool are_valid_flags(uint8_t flags);
 
     std::size_t encoded_size(uint8_t payload_length);
 

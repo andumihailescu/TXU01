@@ -20,6 +20,29 @@ namespace
     std::atomic<uint32_t> g_dropped_receive_packets{0};
     std::atomic<uint32_t> g_dropped_send_results{0};
 
+    bool isValidInterface(wifi_interface_t interface)
+    {
+        return interface == WIFI_IF_STA ||
+               interface == WIFI_IF_AP;
+    }
+
+    bool isValidChannel(uint8_t channel)
+    {
+        return channel == 0 ||
+               (channel >= 1 && channel <= 13);
+    }
+
+    bool isZeroAddress(
+        const uint8_t mac[esp_now_driver::MAC_ADDRESS_SIZE])
+    {
+        constexpr uint8_t ZERO_MAC[esp_now_driver::MAC_ADDRESS_SIZE]{};
+
+        return std::memcmp(
+                   mac,
+                   ZERO_MAC,
+                   esp_now_driver::MAC_ADDRESS_SIZE) == 0;
+    }
+
     TickType_t timeoutToTicks(uint32_t timeout_ms)
     {
         if (timeout_ms == esp_now_driver::WAIT_FOREVER)
@@ -154,9 +177,10 @@ namespace esp_now_driver
             return ESP_OK;
         }
 
-        if (config.receive_queue_depth == 0 ||
-            config.send_result_queue_depth == 0 ||
-            config.default_peer_channel > 13)
+        if (!isValidInterface(config.interface) ||
+            !isValidChannel(config.default_peer_channel) ||
+            config.receive_queue_depth == 0 ||
+            config.send_result_queue_depth == 0)
         {
             return ESP_ERR_INVALID_ARG;
         }
@@ -267,7 +291,9 @@ namespace esp_now_driver
             return ESP_ERR_INVALID_STATE;
         }
 
-        if (peer.channel > 13)
+        if (!isValidInterface(peer.interface) ||
+            !isValidChannel(peer.channel) ||
+            isZeroAddress(peer.mac))
         {
             return ESP_ERR_INVALID_ARG;
         }

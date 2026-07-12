@@ -26,7 +26,8 @@ namespace esp_now_driver
     struct Config
     {
         wifi_interface_t interface = WIFI_IF_STA;
-        uint8_t default_peer_channel = 1;
+        // 0 foloseste canalul curent al interfetei Wi-Fi.
+        uint8_t default_peer_channel = 0;
 
         uint8_t receive_queue_depth = 8;
         uint8_t send_result_queue_depth = 8;

@@ -8,12 +8,11 @@ namespace
     constexpr std::size_t OFFSET_MAGIC_1 = 1;
     constexpr std::size_t OFFSET_VERSION = 2;
     constexpr std::size_t OFFSET_TYPE = 3;
-    constexpr std::size_t OFFSET_DESTINATION = 4;
-    constexpr std::size_t OFFSET_FLAGS = 5;
-    constexpr std::size_t OFFSET_SEQUENCE = 6;
-    constexpr std::size_t OFFSET_MESSAGE_ID = 8;
-    constexpr std::size_t OFFSET_PAYLOAD_LENGTH = 10;
-    constexpr std::size_t OFFSET_PAYLOAD = 11;
+    constexpr std::size_t OFFSET_FLAGS = 4;
+    constexpr std::size_t OFFSET_SEQUENCE = 5;
+    constexpr std::size_t OFFSET_MESSAGE_ID = 7;
+    constexpr std::size_t OFFSET_PAYLOAD_LENGTH = 9;
+    constexpr std::size_t OFFSET_PAYLOAD = 10;
 
     void writeUint16LittleEndian(
         uint8_t *destination,
@@ -53,10 +52,9 @@ namespace remote_protocol
         }
     }
 
-    bool is_valid_destination(Destination destination)
+    bool are_valid_flags(uint8_t flags)
     {
-        // 0 este rezervat pentru "invalid".
-        return static_cast<uint8_t>(destination) != 0;
+        return (flags & static_cast<uint8_t>(~VALID_FLAGS_MASK)) == 0;
     }
 
     std::size_t encoded_size(uint8_t payload_length)
@@ -128,9 +126,9 @@ namespace remote_protocol
             return EncodeResult::InvalidMessageType;
         }
 
-        if (!is_valid_destination(message.destination))
+        if (!are_valid_flags(message.flags))
         {
-            return EncodeResult::InvalidDestination;
+            return EncodeResult::InvalidFlags;
         }
 
         if (message.payload_length > MAX_PAYLOAD_SIZE)
@@ -152,9 +150,6 @@ namespace remote_protocol
 
         output[OFFSET_TYPE] =
             static_cast<uint8_t>(message.type);
-
-        output[OFFSET_DESTINATION] =
-            static_cast<uint8_t>(message.destination);
 
         output[OFFSET_FLAGS] = message.flags;
 
@@ -228,13 +223,11 @@ namespace remote_protocol
             return DecodeResult::InvalidMessageType;
         }
 
-        const Destination destination =
-            static_cast<Destination>(
-                packet[OFFSET_DESTINATION]);
+        const uint8_t flags = packet[OFFSET_FLAGS];
 
-        if (!is_valid_destination(destination))
+        if (!are_valid_flags(flags))
         {
-            return DecodeResult::InvalidDestination;
+            return DecodeResult::InvalidFlags;
         }
 
         const uint8_t payload_length =
@@ -273,8 +266,7 @@ namespace remote_protocol
         Message decoded{};
 
         decoded.type = type;
-        decoded.destination = destination;
-        decoded.flags = packet[OFFSET_FLAGS];
+        decoded.flags = flags;
 
         decoded.sequence_number =
             readUint16LittleEndian(
@@ -309,8 +301,8 @@ namespace remote_protocol
             return "NullPointer";
         case EncodeResult::InvalidMessageType:
             return "InvalidMessageType";
-        case EncodeResult::InvalidDestination:
-            return "InvalidDestination";
+        case EncodeResult::InvalidFlags:
+            return "InvalidFlags";
         case EncodeResult::PayloadTooLarge:
             return "PayloadTooLarge";
         case EncodeResult::OutputTooSmall:
@@ -336,8 +328,8 @@ namespace remote_protocol
             return "UnsupportedVersion";
         case DecodeResult::InvalidMessageType:
             return "InvalidMessageType";
-        case DecodeResult::InvalidDestination:
-            return "InvalidDestination";
+        case DecodeResult::InvalidFlags:
+            return "InvalidFlags";
         case DecodeResult::PayloadTooLarge:
             return "PayloadTooLarge";
         case DecodeResult::InvalidPacketLength:

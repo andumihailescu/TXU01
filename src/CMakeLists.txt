@@ -1,12 +1,13 @@
 idf_component_register(
     SRCS
         "main.cpp"
+        "application/application.cpp"
         "wifi_manager/wifi_manager.cpp"
         "esp_now_driver/esp_now_driver.cpp"
         "remote_protocol/remote_protocol.cpp"
 
     INCLUDE_DIRS
-        "."
+        "../include"
 
     REQUIRES
         esp_event
