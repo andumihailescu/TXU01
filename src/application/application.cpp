@@ -35,11 +35,6 @@ namespace
         return ESP_OK;
     }
 
-    bool uses_dummy_rxu01_mac(const application::Config &config)
-    {
-        return config.rxu01_mac == application::RXU01_DUMMY_MAC;
-    }
-
     void write_counter_to_payload(
         uint8_t *payload,
         uint32_t counter)
@@ -215,15 +210,6 @@ namespace application
     [[noreturn]] void run(const Config &config)
     {
         ESP_ERROR_CHECK(validate_config(config));
-
-        if (uses_dummy_rxu01_mac(config))
-        {
-            ESP_LOGW(
-                TAG,
-                "RXU01 foloseste MAC-ul dummy " MACSTR
-                "; inlocuieste-l cu MAC-ul STA real",
-                MAC2STR(config.rxu01_mac.data()));
-        }
 
         ESP_ERROR_CHECK(initialize_wifi(config));
         ESP_ERROR_CHECK(initialize_esp_now(config));
