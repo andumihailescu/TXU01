@@ -24,7 +24,9 @@ namespace
     {
         if (config.esp_now_channel < 1 ||
             config.esp_now_channel > 13 ||
+            (config.txu01_mac[0] & 0x01U) != 0 ||
             (config.rxu01_mac[0] & 0x01U) != 0 ||
+            config.txu01_mac == config.rxu01_mac ||
             config.receive_queue_depth == 0 ||
             config.send_result_queue_depth == 0 ||
             config.send_interval_ms == 0)
@@ -51,6 +53,12 @@ namespace
         config.channel = app_config.esp_now_channel;
         config.storage = WIFI_STORAGE_RAM;
         config.power_save = WIFI_PS_NONE;
+        config.use_custom_station_mac = true;
+
+        std::memcpy(
+            config.station_mac,
+            app_config.txu01_mac.data(),
+            wifi_manager::MAC_ADDRESS_SIZE);
 
         return wifi_manager::init(config);
     }

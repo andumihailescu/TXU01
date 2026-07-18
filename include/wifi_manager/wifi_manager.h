@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 
 #include "esp_err.h"
@@ -7,11 +8,15 @@
 
 namespace wifi_manager
 {
+    constexpr std::size_t MAC_ADDRESS_SIZE = 6;
+
     struct Config
     {
         uint8_t channel = 1;
         wifi_storage_t storage = WIFI_STORAGE_RAM;
         wifi_ps_type_t power_save = WIFI_PS_NONE;
+        bool use_custom_station_mac = false;
+        uint8_t station_mac[MAC_ADDRESS_SIZE]{};
     };
 
     /**

@@ -112,6 +112,19 @@ namespace wifi_manager
             return err;
         }
 
+        if (config.use_custom_station_mac)
+        {
+            err = esp_wifi_set_mac(
+                WIFI_IF_STA,
+                config.station_mac);
+
+            if (err != ESP_OK)
+            {
+                cleanupWifiAfterFailedInit(wifi_started);
+                return err;
+            }
+        }
+
         err = esp_wifi_start();
 
         if (err != ESP_OK)

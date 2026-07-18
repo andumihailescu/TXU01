@@ -12,8 +12,15 @@ namespace application
     inline constexpr std::array<uint8_t, MAC_ADDRESS_SIZE>
         RXU01_MAC{0x02, 0x52, 0x58, 0x55, 0x00, 0x01};
 
+    /** Adresa MAC Wi-Fi STA locala a telecomenzii TXU01. */
+    inline constexpr std::array<uint8_t, MAC_ADDRESS_SIZE>
+        TXU01_MAC{0x02, 0x52, 0x58, 0x55, 0x00, 0x02};
+
     struct Config
     {
+        std::array<uint8_t, MAC_ADDRESS_SIZE> txu01_mac =
+            TXU01_MAC;
+
         std::array<uint8_t, MAC_ADDRESS_SIZE> rxu01_mac =
             RXU01_MAC;
 
