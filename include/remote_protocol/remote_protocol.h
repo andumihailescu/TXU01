@@ -52,6 +52,23 @@ namespace remote_protocol
     constexpr uint8_t VALID_FLAGS_MASK =
         FlagAckRequested | FlagIsResponse;
 
+    /**
+     * Statusul final trimis de RXU01 dupa rutarea comenzii spre CAN.
+     * Valorile trebuie sa ramana identice cu protocolul RXU01.
+     */
+    enum class AcknowledgementStatus : uint8_t
+    {
+        CanTransmitted = 0,
+        InvalidMessage = 1,
+        UnsupportedMessage = 2,
+        CanBusy = 3,
+        CanTransmitFailed = 4,
+        CanTimeout = 5,
+        UnknownCommand = 6,
+        InvalidPayloadLength = 7,
+        InvalidPayloadValue = 8
+    };
+
     struct Message
     {
         MessageType type = MessageType::Command;
