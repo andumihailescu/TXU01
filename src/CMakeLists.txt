@@ -9,6 +9,8 @@ idf_component_register(
         "reliable_command_sender/reliable_command_sender.cpp"
         "turn_signal_switch/turn_signal_switch.cpp"
         "warning_switch/warning_switch.cpp"
+        "momentary_toggle/momentary_toggle.cpp"
+        "light_mode_selector/light_mode_selector.cpp"
 
     INCLUDE_DIRS
         "../include"
@@ -20,6 +22,7 @@ idf_component_register(
         nvs_flash
         freertos
         esp_driver_gpio
+        esp_adc
         esp_timer
         esp_hw_support
 )
